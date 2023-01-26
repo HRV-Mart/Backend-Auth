@@ -37,7 +37,18 @@ class AuthService (
                 Mono.just("Auth already exist")
             }
     fun updatePassword(auth: Auth, response: ServerHttpResponse) =
-        authRepository.save(auth)
+        authRepository.existsById(auth.email)
+            .flatMap {
+                if (it) {
+                    response.statusCode = HttpStatus.OK
+                    authRepository.save(auth)
+                        .then(Mono.just("Password Updated Successfully"))
+                }
+                else {
+                    response.statusCode = HttpStatus.NOT_FOUND
+                    Mono.just("Auth Not Found")
+                }
+            }
     fun deleteAuth(emailId: String, response: ServerHttpResponse) =
         authRepository.existsById(emailId)
             .flatMap {exist ->
