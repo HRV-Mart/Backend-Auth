@@ -32,7 +32,7 @@ class AuthControllerTest {
     }
     @Test
     fun `should not sign up when it auth exist in database`() {
-        doReturn(Exception().toMono<Exception>())
+        doReturn(Exception("Duplicate key").toMono<Exception>())
             .`when`(mockAuthRepository)
             .insert(auth)
         StepVerifier.create(authController.signUp(auth, response))
