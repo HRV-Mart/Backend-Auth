@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Backend Auth
+  description: |-
+    This is Auth micorservice for backend of **HRV-Mart**. This API will contains operations related to Auth and have its own database. For more information, visit 
+  contact:
+    email: harshverma3305@gmail.com
+    name: Harsh Verma
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Auth
+    description: Operations about Auth
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Sign up
+      operationId: signUp
+      requestBody:
+        description: Created Auth object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      responses:
+        default:
+          description: Signup Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Auth'
+        500:
+          description: Auth already exist
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login up
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      responses:
+        default:
+          description: Login Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Auth'
+        500:
+          description: Auth Not Found
+  /auth:
+    put:
+      tags:
+        - Auth
+      summary: Update Auth
+      operationId: updateAuth
+      requestBody:
+        description: Update an existent Auth
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Auth'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      responses:
+        default:
+          description: successful operation
+  /auth/{authId}:
+    delete:
+      tags:
+        - Auth
+      summary: Delete Auth
+      operationId: deleteAuth
+      parameters:
+        - name: authId
+          in: path
+          description: The AuthId that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: Auth deleted successfully
+        '404':
+          description: Auth not found
+components:
+  schemas:
+    Auth:
+      type: object
+      properties:
+        email:
+          type: string
+          example: test@test.com
+          description: This will be use as id for auth
+        hashedPassword:
+          type: string
+          example: hashed....
+      xml:
+        name: Auth
