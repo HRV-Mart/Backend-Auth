@@ -9,5 +9,4 @@ class BackendAuthApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }

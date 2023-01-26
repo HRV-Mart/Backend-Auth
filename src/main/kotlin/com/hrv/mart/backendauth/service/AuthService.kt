@@ -16,7 +16,7 @@ class AuthService (
 {
     fun login(auth: Auth, response: ServerHttpResponse) =
         authRepository.existsAuthByEmailAndHashedPassword(auth.email, auth.hashedPassword)
-            .flatMap {exist ->
+            .flatMap { exist ->
                 if (exist) {
                     response.statusCode = HttpStatus.OK
                     return@flatMap Mono.just("Login Successfully")
@@ -51,7 +51,7 @@ class AuthService (
             }
     fun deleteAuth(emailId: String, response: ServerHttpResponse) =
         authRepository.existsById(emailId)
-            .flatMap {exist ->
+            .flatMap { exist ->
                 if (exist) {
                     response.statusCode = HttpStatus.OK
                     authRepository.deleteById(emailId)
