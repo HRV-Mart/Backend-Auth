@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
+import io.gitlab.arturbosch.detekt.Detekt
 plugins {
     id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.1.0"
+    id("io.gitlab.arturbosch.detekt").version("1.22.0") // This is to add detekt
+    id("jacoco")// Add Jacoco
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
 }
@@ -23,10 +25,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 }
-
+detekt {
+    toolVersion = "1.22.0"
+    config = files("config/detekt/detekt.yml")
+}
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -36,4 +42,25 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy("jacocoTestCoverageVerification")
+}
+/*
+* Jacoco configs*/
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            excludes = listOf(
+                "com.hrv.mart.user.repository.UserRepository.kt.*"
+            )
+            limit {
+                minimum = "0.9".toBigDecimal()
+            }
+        }
+    }
+}
+tasks.jacocoTestReport{
+    reports {
+        html.required.set(true)
+        generate()
+    }
 }

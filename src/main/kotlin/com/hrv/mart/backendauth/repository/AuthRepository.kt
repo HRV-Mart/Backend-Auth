@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-interface AuthRepository: ReactiveMongoRepository<Auth, String> {
+interface AuthRepository : ReactiveMongoRepository<Auth, String> {
     fun existsAuthByEmailAndHashedPassword(email: String, hashedPassword: String): Mono<Boolean>
 }
