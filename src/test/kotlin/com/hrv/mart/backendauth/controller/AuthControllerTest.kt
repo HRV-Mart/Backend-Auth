@@ -39,4 +39,22 @@ class AuthControllerTest {
             .expectNext("Auth already exist")
             .verifyComplete()
     }
+    @Test
+    fun `should login when auth exist in database`() {
+        doReturn(Mono.just(true))
+            .`when`(mockAuthRepository)
+            .existsAuthByEmailAndHashedPassword(auth.email, auth.hashedPassword)
+        StepVerifier.create(authController.login(auth, response))
+            .expectNext("Login Successfully")
+            .verifyComplete()
+    }
+    @Test
+    fun `should not login when auth does not exist in database`() {
+        doReturn(Mono.just(false))
+            .`when`(mockAuthRepository)
+            .existsAuthByEmailAndHashedPassword(auth.email, auth.hashedPassword)
+        StepVerifier.create(authController.login(auth, response))
+            .expectNext("Auth Not Found")
+            .verifyComplete()
+    }
 }
