@@ -8,5 +8,6 @@ class BackendAuthApplicationTests {
 
     @Test
     fun contextLoads() {
+        main(emptyArray())
     }
 }
