@@ -57,4 +57,48 @@ class AuthControllerTest {
             .expectNext("Auth Not Found")
             .verifyComplete()
     }
+    @Test
+    fun `should update password when auth exist in database`() {
+        val updatedAuth = Auth(email = auth.email, hashedPassword = "shh.. secret hashed password")
+        doReturn(Mono.just(true))
+            .`when`(mockAuthRepository)
+            .existsById(auth.email)
+        doReturn(Mono.just(updatedAuth))
+            .`when`(mockAuthRepository)
+            .save(updatedAuth)
+        StepVerifier.create(authController.updatePassword(updatedAuth, response))
+            .expectNext("Password Updated Successfully")
+            .verifyComplete()
+    }
+    @Test
+    fun `should not update password when auth does not exist in database`() {
+        val updatedAuth = Auth(email = auth.email, hashedPassword = "shh.. secret hashed password")
+        doReturn(Mono.just(false))
+            .`when`(mockAuthRepository)
+            .existsById(auth.email)
+        StepVerifier.create(authController.updatePassword(updatedAuth, response))
+            .expectNext("Auth Not Found")
+            .verifyComplete()
+    }
+    @Test
+    fun `should delete auth when auth exist in database`() {
+        doReturn(Mono.just(true))
+            .`when`(mockAuthRepository)
+            .existsById(auth.email)
+        doReturn(Mono.empty<Void>())
+            .`when`(mockAuthRepository)
+            .deleteById(auth.email)
+        StepVerifier.create(authController.deleteAuth(auth.email, response))
+            .expectNext("Auth Deleted Successfully")
+            .verifyComplete()
+    }
+    @Test
+    fun `should not delete auth when auth does not exist in database`() {
+        doReturn(Mono.just(false))
+            .`when`(mockAuthRepository)
+            .existsById(auth.email)
+        StepVerifier.create(authController.deleteAuth(auth.email, response))
+            .expectNext("Auth Not Found")
+            .verifyComplete()
+    }
 }
