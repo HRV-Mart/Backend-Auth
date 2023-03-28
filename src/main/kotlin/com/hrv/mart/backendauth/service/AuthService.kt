@@ -2,16 +2,21 @@ package com.hrv.mart.backendauth.service
 
 import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.userlibrary.User
+import com.hrv.mart.userlibrary.UserProducer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
 class AuthService (
     @Autowired
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @Autowired
+    private val kafkaTemplate: KafkaTemplate<String, User>
 )
 {
     fun login(auth: Auth, response: ServerHttpResponse) =
@@ -26,9 +31,11 @@ class AuthService (
                     return@flatMap Mono.just("Auth Not Found")
                 }
             }
-    fun signUp(auth: Auth, response: ServerHttpResponse) =
+    fun signUp(auth: Auth, user: User, response: ServerHttpResponse) =
         authRepository.insert(auth)
             .map {
+                UserProducer(kafkaTemplate)
+                    .createUser(user)
                 response.statusCode = HttpStatus.OK
                 "Signup Successfully"
             }
