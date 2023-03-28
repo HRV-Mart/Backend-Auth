@@ -40,6 +40,8 @@ class AuthService (
                 "Signup Successfully"
             }
             .onErrorResume {
+                UserProducer(kafkaTemplate)
+                    .createUser(user)
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
                 Mono.just("Auth already exist")
             }
