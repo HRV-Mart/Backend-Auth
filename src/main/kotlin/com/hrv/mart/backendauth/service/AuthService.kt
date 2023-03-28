@@ -62,6 +62,8 @@ class AuthService (
         authRepository.existsById(emailId)
             .flatMap { exist ->
                 if (exist) {
+                    UserProducer(kafkaTemplate)
+                        .deleteUser(emailId)
                     response.statusCode = HttpStatus.OK
                     authRepository.deleteById(emailId)
                         .then(Mono.just("Auth Deleted Successfully"))
