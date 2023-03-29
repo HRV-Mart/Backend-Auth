@@ -2,6 +2,7 @@ package com.hrv.mart.backendauth.service
 
 import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.userlibrary.model.User
 import com.hrv.mart.userlibrary.service.UserProducer
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +17,7 @@ class AuthService (
     @Autowired
     private val authRepository: AuthRepository,
     @Autowired
-    private val kafkaTemplate: ReactiveKafkaProducerTemplate<String, User>
+    private val kafkaRepository: KafkaRepository
 )
 {
     fun login(auth: Auth, response: ServerHttpResponse) =
@@ -34,7 +35,7 @@ class AuthService (
     fun signUp(auth: Auth, user: User, response: ServerHttpResponse): Mono<String> =
         authRepository.insert(auth)
             .flatMap {
-                UserProducer(kafkaTemplate)
+                kafkaRepository
                     .createUser(user)
                     .map {
                         response.statusCode = HttpStatus.OK
@@ -62,7 +63,7 @@ class AuthService (
         authRepository.existsById(emailId)
             .flatMap { exist ->
                 if (exist) {
-                    UserProducer(kafkaTemplate)
+                    kafkaRepository
                         .deleteUser(emailId)
                         .flatMap {
                             response.statusCode = HttpStatus.OK
