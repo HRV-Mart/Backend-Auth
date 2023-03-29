@@ -2,6 +2,8 @@ package com.hrv.mart.backendauth.service
 
 import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.backendauth.repository.KafkaRepository
+import com.hrv.mart.userlibrary.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -11,7 +13,9 @@ import reactor.core.publisher.Mono
 @Service
 class AuthService (
     @Autowired
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @Autowired
+    private val kafkaRepository: KafkaRepository
 )
 {
     fun login(auth: Auth, response: ServerHttpResponse) =
@@ -26,11 +30,15 @@ class AuthService (
                     return@flatMap Mono.just("Auth Not Found")
                 }
             }
-    fun signUp(auth: Auth, response: ServerHttpResponse) =
+    fun signUp(auth: Auth, user: User, response: ServerHttpResponse): Mono<String> =
         authRepository.insert(auth)
-            .map {
+            .flatMap {
                 response.statusCode = HttpStatus.OK
-                "Signup Successfully"
+                kafkaRepository
+                    .createUser(user)
+                    .then(
+                        Mono.just("Signup Successfully")
+                    )
             }
             .onErrorResume {
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
@@ -52,10 +60,14 @@ class AuthService (
     fun deleteAuth(emailId: String, response: ServerHttpResponse) =
         authRepository.existsById(emailId)
             .flatMap { exist ->
+                response.statusCode = HttpStatus.OK
                 if (exist) {
-                    response.statusCode = HttpStatus.OK
-                    authRepository.deleteById(emailId)
-                        .then(Mono.just("Auth Deleted Successfully"))
+                    kafkaRepository
+                        .deleteUser(emailId)
+                        .then (
+                            authRepository.deleteById(emailId)
+                                .then(Mono.just("Auth Deleted Successfully"))
+                        )
                 }
                 else {
                     response.statusCode = HttpStatus.NOT_FOUND
