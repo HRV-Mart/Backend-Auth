@@ -4,7 +4,6 @@ import com.hrv.mart.backendauth.config.ReactiveKafkaProducerConfig
 import com.hrv.mart.userlibrary.model.User
 import com.hrv.mart.userlibrary.service.UserProducer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
-import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Repository
 
 @Repository
