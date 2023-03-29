@@ -2,12 +2,12 @@ package com.hrv.mart.backendauth.service
 
 import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.repository.AuthRepository
-import com.hrv.mart.userlibrary.User
-import com.hrv.mart.userlibrary.UserProducer
+import com.hrv.mart.userlibrary.model.User
+import com.hrv.mart.userlibrary.service.UserProducer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
-import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -16,7 +16,7 @@ class AuthService (
     @Autowired
     private val authRepository: AuthRepository,
     @Autowired
-    private val kafkaTemplate: KafkaTemplate<String, User>
+    private val kafkaTemplate: ReactiveKafkaProducerTemplate<String, User>
 )
 {
     fun login(auth: Auth, response: ServerHttpResponse) =
@@ -31,17 +31,17 @@ class AuthService (
                     return@flatMap Mono.just("Auth Not Found")
                 }
             }
-    fun signUp(auth: Auth, user: User, response: ServerHttpResponse) =
+    fun signUp(auth: Auth, user: User, response: ServerHttpResponse): Mono<String> =
         authRepository.insert(auth)
-            .map {
+            .flatMap {
                 UserProducer(kafkaTemplate)
                     .createUser(user)
-                response.statusCode = HttpStatus.OK
-                "Signup Successfully"
+                    .map {
+                        response.statusCode = HttpStatus.OK
+                        "Signup Successfully"
+                    }
             }
             .onErrorResume {
-                UserProducer(kafkaTemplate)
-                    .createUser(user)
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
                 Mono.just("Auth already exist")
             }
@@ -64,9 +64,11 @@ class AuthService (
                 if (exist) {
                     UserProducer(kafkaTemplate)
                         .deleteUser(emailId)
-                    response.statusCode = HttpStatus.OK
-                    authRepository.deleteById(emailId)
-                        .then(Mono.just("Auth Deleted Successfully"))
+                        .flatMap {
+                            response.statusCode = HttpStatus.OK
+                            authRepository.deleteById(emailId)
+                                .then(Mono.just("Auth Deleted Successfully"))
+                        }
                 }
                 else {
                     response.statusCode = HttpStatus.NOT_FOUND
