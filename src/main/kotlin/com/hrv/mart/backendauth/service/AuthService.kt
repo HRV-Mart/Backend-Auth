@@ -4,11 +4,9 @@ import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.repository.AuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.userlibrary.model.User
-import com.hrv.mart.userlibrary.service.UserProducer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
-import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -35,12 +33,12 @@ class AuthService (
     fun signUp(auth: Auth, user: User, response: ServerHttpResponse): Mono<String> =
         authRepository.insert(auth)
             .flatMap {
+                response.statusCode = HttpStatus.OK
                 kafkaRepository
                     .createUser(user)
-                    .map {
-                        response.statusCode = HttpStatus.OK
-                        "Signup Successfully"
-                    }
+                    .then(
+                        Mono.just("Signup Successfully")
+                    )
             }
             .onErrorResume {
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
@@ -62,14 +60,14 @@ class AuthService (
     fun deleteAuth(emailId: String, response: ServerHttpResponse) =
         authRepository.existsById(emailId)
             .flatMap { exist ->
+                response.statusCode = HttpStatus.OK
                 if (exist) {
                     kafkaRepository
                         .deleteUser(emailId)
-                        .flatMap {
-                            response.statusCode = HttpStatus.OK
+                        .then (
                             authRepository.deleteById(emailId)
                                 .then(Mono.just("Auth Deleted Successfully"))
-                        }
+                        )
                 }
                 else {
                     response.statusCode = HttpStatus.NOT_FOUND
