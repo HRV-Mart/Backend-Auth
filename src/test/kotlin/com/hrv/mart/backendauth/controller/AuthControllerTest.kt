@@ -1,32 +1,47 @@
 package com.hrv.mart.backendauth.controller
 
 import com.hrv.mart.backendauth.model.Auth
+import com.hrv.mart.backendauth.model.UserDetail
 import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.backendauth.service.AuthService
+import com.hrv.mart.userlibrary.model.User
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 import org.springframework.http.server.reactive.ServerHttpResponse
 import reactor.core.publisher.Mono
+import reactor.kafka.sender.SenderResult
 import reactor.kotlin.core.publisher.toMono
 import reactor.test.StepVerifier
 import java.lang.Exception
 
 class AuthControllerTest {
     private val mockAuthRepository = mock(AuthRepository::class.java)
-    private val authService = AuthService(mockAuthRepository)
+    private val mockKafkaRepository = mock(KafkaRepository::class.java)
+    private val authService = AuthService(mockAuthRepository, mockKafkaRepository)
     private val authController = AuthController(authService)
     private val auth = Auth(
         email = "test@test.com",
         hashedPassword = "hashedPassword"
     )
-    private final val response = mock(ServerHttpResponse::class.java)
+    private val userDetail = UserDetail(
+        userDetail = User(
+            emailId = auth.email,
+            name = "test"
+        ),
+        authDetail = auth
+    )
+    private val response = mock(ServerHttpResponse::class.java)
     @Test
     fun `should sign up and save auth in database when it does not exist`() {
         doReturn(Mono.just(auth))
             .`when`(mockAuthRepository)
             .insert(auth)
-        StepVerifier.create(authController.signUp(auth, response))
+        doReturn(Mono.empty<SenderResult<Void>>())
+            .`when`(mockKafkaRepository)
+            .createUser(user = userDetail.userDetail)
+        StepVerifier.create(authController.signUp(userDetail, response))
             .expectNext("Signup Successfully")
             .verifyComplete()
     }
@@ -35,7 +50,10 @@ class AuthControllerTest {
         doReturn(Exception("Duplicate key").toMono<Exception>())
             .`when`(mockAuthRepository)
             .insert(auth)
-        StepVerifier.create(authController.signUp(auth, response))
+        doReturn(Mono.empty<SenderResult<Void>>())
+            .`when`(mockKafkaRepository)
+            .createUser(user = userDetail.userDetail)
+        StepVerifier.create(authController.signUp(userDetail, response))
             .expectNext("Auth already exist")
             .verifyComplete()
     }
@@ -88,6 +106,9 @@ class AuthControllerTest {
         doReturn(Mono.empty<Void>())
             .`when`(mockAuthRepository)
             .deleteById(auth.email)
+        doReturn(Mono.empty<SenderResult<Void>>())
+            .`when`(mockKafkaRepository)
+            .deleteUser(userId = auth.email)
         StepVerifier.create(authController.deleteAuth(auth.email, response))
             .expectNext("Auth Deleted Successfully")
             .verifyComplete()
@@ -97,6 +118,9 @@ class AuthControllerTest {
         doReturn(Mono.just(false))
             .`when`(mockAuthRepository)
             .existsById(auth.email)
+        doReturn(Mono.empty<SenderResult<Void>>())
+            .`when`(mockKafkaRepository)
+            .deleteUser(userId = auth.email)
         StepVerifier.create(authController.deleteAuth(auth.email, response))
             .expectNext("Auth Not Found")
             .verifyComplete()
