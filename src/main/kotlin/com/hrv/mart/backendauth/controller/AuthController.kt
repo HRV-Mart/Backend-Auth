@@ -1,6 +1,7 @@
 package com.hrv.mart.backendauth.controller
 
 import com.hrv.mart.backendauth.model.Auth
+import com.hrv.mart.backendauth.model.UserDetail
 import com.hrv.mart.backendauth.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -20,8 +21,12 @@ class AuthController (
 )
 {
     @PostMapping("/signup")
-    fun signUp(@RequestBody auth: Auth, response: ServerHttpResponse) =
-        authService.signUp(auth, response)
+    fun signUp(@RequestBody userDetail: UserDetail, response: ServerHttpResponse) =
+        authService.signUp(
+            userDetail.authDetail,
+            userDetail.userDetail,
+            response
+        )
     @PostMapping("/login")
     fun login(@RequestBody auth: Auth, response: ServerHttpResponse) =
         authService.login(auth, response)
