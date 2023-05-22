@@ -19,6 +19,7 @@ spec:
           image: harsh3305/hrv-mart-backend-auth
           ports:
             - containerPort: 8082
+          imagePullPolicy: Always
           env:
             - name: MONGODB_URI
               valueFrom:
