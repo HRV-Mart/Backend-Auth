@@ -16,16 +16,16 @@ spec:
     spec:
       containers:
         - name: backend-auth
-          image: harsh3305/hrv-mart-backend-auth
+          image: harsh3305/hrv-mart-backend-auth:v0.0.2-beta
           ports:
             - containerPort: 8082
           imagePullPolicy: Always
           env:
             - name: MONGODB_URI
               valueFrom:
-                secretKeyRef:
-                  key: mongodb_uri
-                  name: secret
+                configMapKeyRef:
+                  key: mongodb-uri
+                  name: config-map
             - name: KAFKA_URL
               valueFrom:
                 configMapKeyRef:
@@ -44,4 +44,4 @@ spec:
     - protocol: TCP
       port: 8082
       targetPort: 8082
-      nodePort: 30002
+      nodePort: 30012
