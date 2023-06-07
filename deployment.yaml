@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-auth-deployment
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: backend-auth
+          image: harsh3305/hrv-mart-backend-auth:v0.0.2-beta
+          ports:
+            - containerPort: 8082
+          imagePullPolicy: Always
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb-uri
+                  name: config-map
+            - name: KAFKA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: config-map
+                  key: kafka-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-auth-service
+spec:
+  selector:
+    app: auth
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+      nodePort: 30012
