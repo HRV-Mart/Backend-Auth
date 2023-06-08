@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service
 @Service
 class AuthService (
     @Autowired
-    private val kafkaRepository: KafkaRepository,
+    private val authRepository: AuthRepository,
     @Autowired
-    private val authRepository: AuthRepository
+    private val kafkaRepository: KafkaRepository
 )
 {
     suspend fun clientRequest(
