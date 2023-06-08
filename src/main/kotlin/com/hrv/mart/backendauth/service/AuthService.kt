@@ -22,7 +22,6 @@ class AuthService (
         userType: UserType,
         response: ServerHttpResponse
     ): String {
-        println(userType)
         return try {
             val auth = authRepository.getAuthAccount(jwt)
             kafkaRepository
