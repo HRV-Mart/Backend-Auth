@@ -18,6 +18,9 @@ env:
   USERNAME: ${{secrets.OSSRH_USERNAME}}
   TOKEN: ${{secrets.OSSRH_TOKEN}}
   KAFKA_URL: ${{secrets.KAFKA_URL}}
+  APPWRITE_ENDPOINT: ${{secrets.APPWRITE_ENDPOINT}}
+  APPWRITE_PROJECT_ID: ${{secrets.APPWRITE_PROJECT_ID}}
+
 jobs:
   push_to_registries:
     name: Push Docker image to multiple registries
