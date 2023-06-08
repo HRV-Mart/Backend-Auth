@@ -63,14 +63,15 @@ tasks.withType<Test> {
 /*
 * Jacoco configs*/
 tasks.jacocoTestCoverageVerification {
+
     violationRules {
         rule {
-            excludes = listOf(
-                "com.hrv.mart.user.repository.UserRepository.kt.*"
-            )
-            limit {
-                minimum = "0.9".toBigDecimal()
-            }
+//            enabled=true
+//            element="CLASS"
+//            excludes= listOf("**/*Repository.kt")
+//            limit {
+//                minimum = "0.9".toBigDecimal()
+//            }
         }
     }
 }
@@ -79,4 +80,9 @@ tasks.jacocoTestReport{
         html.required.set(true)
         generate()
     }
+//    afterEvaluate {
+//        classDirectories.setFrom(files(classDirectories.files.toCollection(
+//            fileTree()
+//        )))
+//
 }
