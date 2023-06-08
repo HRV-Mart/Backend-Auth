@@ -42,6 +42,8 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     implementation("io.projectreactor.kafka:reactor-kafka")
+    // Appwrite
+    implementation("io.appwrite:sdk-for-kotlin:2.0.0")
 }
 detekt {
     toolVersion = "1.22.0"
