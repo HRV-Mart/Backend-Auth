@@ -1,11 +1,19 @@
 package com.hrv.mart.backendauth.model
 
+import com.hrv.mart.userlibrary.model.User
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document("Auth")
 data class Auth (
-    @Id
+    val createdAt: String,
+    val updatedAt: String,
+    val name: String,
     val email: String,
-    val hashedPassword: String
-)
+    val emailVerification: Boolean
+) {
+    fun toUser() =
+        User(
+            emailId = email,
+            name = name
+        )
+}
