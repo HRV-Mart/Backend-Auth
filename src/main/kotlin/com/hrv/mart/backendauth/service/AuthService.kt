@@ -4,10 +4,12 @@ import com.hrv.mart.backendauth.model.UserType
 import com.hrv.mart.backendauth.repository.AuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import io.appwrite.exceptions.AppwriteException
+import okhttp3.internal.wait
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 class AuthService (
@@ -17,22 +19,22 @@ class AuthService (
     private val kafkaRepository: KafkaRepository
 )
 {
-    suspend fun clientRequest(
+    fun clientRequest(
         jwt: String,
         userType: UserType,
         response: ServerHttpResponse
-    ): String {
-        return try {
-            val auth = authRepository.getAuthAccount(jwt)
-            kafkaRepository
-                .createUser(auth.toUser())
-                .block()
-            response.statusCode = HttpStatus.OK
-            "Login Successful"
-
-        } catch (_: AppwriteException) {
-            response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-            "Unable to login"
-        }
+    ): Mono<String> {
+        userType.name
+        return authRepository.getAuthAccount(jwt)
+            .flatMap {auth ->
+                response.statusCode = HttpStatus.OK
+                kafkaRepository
+                    .createUser(auth.toUser())
+                    .then(Mono.just("Login Successful"))
+            }
+            .onErrorResume {
+                response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+                Mono.just("Unable to login")
+            }
     }
 }

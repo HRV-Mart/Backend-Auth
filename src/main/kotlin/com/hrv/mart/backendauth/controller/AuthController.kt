@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 import java.util.Optional
+import kotlin.jvm.optionals.getOrDefault
+import kotlin.jvm.optionals.getOrElse
 
 @RestController
 @RequestMapping("/auth")
@@ -16,27 +19,20 @@ class AuthController (
     private val authService: AuthService
 )
 {
+    @OptIn(ExperimentalStdlibApi::class)
     @GetMapping
-    suspend fun getInfoFromJWT(
+    fun getInfoFromJWT(
         @RequestParam jwt: Optional<String>,
         @RequestParam userType: Optional<UserType>,
         response: ServerHttpResponse
-    ): String {
-        if (jwt.isEmpty) {
+    ): Mono<String> {
+        return if (jwt.isEmpty) {
             response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-            return "Please send JWT"
-        }
-        else if (userType.isEmpty) {
-            return authService.clientRequest(
+            Mono.just("Please send JWT")
+        } else {
+            authService.clientRequest(
                 jwt = jwt.get(),
-                UserType.USER,
-                response
-            )
-        }
-        else {
-            return authService.clientRequest(
-                jwt = jwt.get(),
-                userType.get(),
+                userType = userType.getOrDefault(UserType.USER),
                 response
             )
         }
