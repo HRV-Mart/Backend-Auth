@@ -42,7 +42,6 @@ class AuthControllerTest {
         doReturn(Mono.empty<SenderResult<Void>>())
             .`when`(mockKafkaRepository)
             .createUser(auth.toUser())
-        val expected = "Login Successful"
 
         StepVerifier
             .create(
@@ -52,7 +51,7 @@ class AuthControllerTest {
                     response
                 )
             )
-            .expectNext(expected)
+            .expectNext(auth)
             .verifyComplete()
     }
     @Test
@@ -65,8 +64,6 @@ class AuthControllerTest {
             .`when`(mockAuthRepository)
             .getAuthAccount(jwt)
 
-        val expected = "Unable to login"
-
         StepVerifier
             .create(
                 authController.getInfoFromJWT(
@@ -75,7 +72,7 @@ class AuthControllerTest {
                     response
                 )
             )
-            .expectNext(expected)
-            .verifyComplete()
+            .expectComplete()
+            .verify()
     }
 }
