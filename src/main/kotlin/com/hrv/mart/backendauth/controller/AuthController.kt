@@ -1,5 +1,6 @@
 package com.hrv.mart.backendauth.controller
 
+import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.model.UserType
 import com.hrv.mart.backendauth.service.AuthService
 import org.springframework.http.HttpStatus
@@ -25,10 +26,10 @@ class AuthController (
         @RequestParam jwt: Optional<String>,
         @RequestParam userType: Optional<UserType>,
         response: ServerHttpResponse
-    ): Mono<String> {
+    ): Mono<Auth > {
         return if (jwt.isEmpty) {
             response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-            Mono.just("Please send JWT")
+            Mono.empty()
         } else {
             authService.clientRequest(
                 jwt = jwt.get(),

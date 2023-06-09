@@ -1,5 +1,6 @@
 package com.hrv.mart.backendauth.service
 
+import com.hrv.mart.backendauth.model.Auth
 import com.hrv.mart.backendauth.model.UserType
 import com.hrv.mart.backendauth.repository.AuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
@@ -23,18 +24,18 @@ class AuthService (
         jwt: String,
         userType: UserType,
         response: ServerHttpResponse
-    ): Mono<String> {
+    ): Mono<Auth> {
         userType.name
         return authRepository.getAuthAccount(jwt)
             .flatMap {auth ->
                 response.statusCode = HttpStatus.OK
                 kafkaRepository
                     .createUser(auth.toUser())
-                    .then(Mono.just("Login Successful"))
+                    .then(Mono.just(auth))
             }
             .onErrorResume {
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-                Mono.just("Unable to login")
+                Mono.empty()
             }
     }
 }
