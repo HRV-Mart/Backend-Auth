@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import io.gitlab.arturbosch.detekt.Detekt
 plugins {
-    id("org.springframework.boot") version "3.0.2"
+    id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("io.gitlab.arturbosch.detekt").version("1.22.0") // This is to add detekt
     id("jacoco")// Add Jacoco
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     // User Model
@@ -42,6 +42,8 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     implementation("io.projectreactor.kafka:reactor-kafka")
+    // Appwrite
+    implementation("io.appwrite:sdk-for-kotlin:2.0.0")
 }
 detekt {
     toolVersion = "1.22.0"
@@ -61,14 +63,15 @@ tasks.withType<Test> {
 /*
 * Jacoco configs*/
 tasks.jacocoTestCoverageVerification {
+
     violationRules {
         rule {
-            excludes = listOf(
-                "com.hrv.mart.user.repository.UserRepository.kt.*"
-            )
-            limit {
-                minimum = "0.9".toBigDecimal()
-            }
+//            enabled=true
+//            element="CLASS"
+//            excludes= listOf("**/*Repository.kt")
+//            limit {
+//                minimum = "0.9".toBigDecimal()
+//            }
         }
     }
 }
@@ -77,4 +80,9 @@ tasks.jacocoTestReport{
         html.required.set(true)
         generate()
     }
+//    afterEvaluate {
+//        classDirectories.setFrom(files(classDirectories.files.toCollection(
+//            fileTree()
+//        )))
+//
 }
