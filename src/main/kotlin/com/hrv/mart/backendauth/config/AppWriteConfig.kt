@@ -10,7 +10,9 @@ class AppWriteConfig (
     @Value("\${hrv.mart.appwrite.endPoint}")
     private val appwriteEndpoint: String,
     @Value("\${hrv.mart.appwrite.projectId}")
-    private val appwriteProjectId: String
+    private val appwriteProjectId: String,
+    @Value("\${hrv.mart.appwrite.apikey}")
+    private val appwriteAPIKey: String
 )
 {
     @Bean
@@ -19,6 +21,7 @@ class AppWriteConfig (
             endPoint = appwriteEndpoint
         )
         client.setProject(appwriteProjectId)
+        client.setKey(appwriteAPIKey)
         return client
     }
 }

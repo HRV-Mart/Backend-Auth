@@ -20,6 +20,7 @@ env:
   KAFKA_URL: ${{secrets.KAFKA_URL}}
   APPWRITE_ENDPOINT: ${{secrets.APPWRITE_ENDPOINT}}
   APPWRITE_PROJECT_ID: ${{secrets.APPWRITE_PROJECT_ID}}
+  APPWRITE_APIKEY: ${{secrets.APPWRITE_APIKEY}}
 
 jobs:
   push_to_registries:
