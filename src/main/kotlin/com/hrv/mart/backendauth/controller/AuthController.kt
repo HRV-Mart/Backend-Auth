@@ -1,7 +1,7 @@
 package com.hrv.mart.backendauth.controller
 
-import com.hrv.mart.backendauth.model.Auth
-import com.hrv.mart.backendauth.model.UserType
+import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.service.AuthService
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -26,7 +26,7 @@ class AuthController (
         @RequestParam jwt: Optional<String>,
         @RequestParam userType: Optional<UserType>,
         response: ServerHttpResponse
-    ): Mono<Auth > {
+    ): Mono<Auth> {
         return if (jwt.isEmpty) {
             response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
             Mono.empty()
