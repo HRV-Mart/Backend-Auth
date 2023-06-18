@@ -38,6 +38,8 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     // User Model
     implementation("com.hrv.mart:user-library:0.0.2")
+    // Auth Library
+    implementation("com.hrv.mart:auth-library:0.0.1")
     // Kafka
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
