@@ -39,7 +39,7 @@ dependencies {
     // User Model
     implementation("com.hrv.mart:user-library:0.0.2")
     // Auth Library
-    implementation("com.hrv.mart:auth-library:0.0.1")
+    implementation("com.hrv.mart:auth-library:0.0.2")
     // Kafka
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
