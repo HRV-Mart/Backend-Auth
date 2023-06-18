@@ -1,6 +1,6 @@
 package com.hrv.mart.backendauth.repository
 
-import com.hrv.mart.backendauth.model.Auth
+import com.hrv.mart.authlibrary.model.Auth
 import io.appwrite.Client
 import io.appwrite.services.Account
 import kotlinx.coroutines.runBlocking

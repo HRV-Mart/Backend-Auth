@@ -1,7 +1,8 @@
 package com.hrv.mart.backendauth.controller
 
-import com.hrv.mart.backendauth.model.Auth
-import com.hrv.mart.backendauth.model.UserType
+import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.AuthRequest
+import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.backendauth.service.AuthService
@@ -46,8 +47,7 @@ class AuthControllerTest {
         StepVerifier
             .create(
                 authController.getInfoFromJWT(
-                    Optional.of(jwt),
-                    Optional.of(userType),
+                    AuthRequest(jwt, userType),
                     response
                 )
             )
@@ -67,8 +67,7 @@ class AuthControllerTest {
         StepVerifier
             .create(
                 authController.getInfoFromJWT(
-                    Optional.of(jwt),
-                    Optional.of(userType),
+                    AuthRequest(jwt, userType),
                     response
                 )
             )

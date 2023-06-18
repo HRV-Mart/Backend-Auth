@@ -1,11 +1,9 @@
 package com.hrv.mart.backendauth.service
 
-import com.hrv.mart.backendauth.model.Auth
-import com.hrv.mart.backendauth.model.UserType
+import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
-import io.appwrite.exceptions.AppwriteException
-import okhttp3.internal.wait
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
