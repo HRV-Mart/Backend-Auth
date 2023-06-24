@@ -10,5 +10,5 @@ gradle clean build
 ```
 ## Set up application using Docker
 ```
-docker run  --name HRV-Mart-Backend-Auth -it --init --net="host" -d harsh3305/hrv-mart-backend-auth:latest
+docker run  --name HRV-Mart-Backend-Auth -it --nev APPWRITE_PROJECT_ID=PROJECT_ID --env APPWRITE_APIKEY=--init --net="host" -d harsh3305/hrv-mart-backend-auth:latest
 ```
