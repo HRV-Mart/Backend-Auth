@@ -37,7 +37,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     // User Model
-    implementation("com.hrv.mart:user-library:0.0.2")
+    implementation("com.hrv.mart:user-library:0.0.3")
     // Auth Library
     implementation("com.hrv.mart:auth-library:0.0.2")
     // Kafka
