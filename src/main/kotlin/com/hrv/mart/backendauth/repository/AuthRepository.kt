@@ -1,6 +1,6 @@
 package com.hrv.mart.backendauth.repository
 
-import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.AppWriteAuth
 import io.appwrite.Client
 import io.appwrite.services.Account
 import kotlinx.coroutines.runBlocking
@@ -15,20 +15,23 @@ class AuthRepository (
     private val client: Client
 )
 {
-    fun getAuthAccount(jwt: String): Mono<Auth> {
+    fun getAuthAccount(jwt: String): Mono<AppWriteAuth> {
         client.setJWT(jwt)
         val account = Account(client)
-        return runBlocking{account.get()}
+        return runBlocking{
+            account.get()
+        }
             .toMono()
             .map {details ->
-                Auth(
+
+                AppWriteAuth(
                     name = details.name,
                     email = details.email,
+                    userId = details.id,
                     emailVerification = details.emailVerification,
                     createdAt = details.createdAt,
                     updatedAt = details.updatedAt
                 )
             }
-
     }
 }
