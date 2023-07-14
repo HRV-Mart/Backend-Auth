@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
 @Repository
-class AuthRepository (
+class AppWriteAuthRepository (
     @Autowired
     private val client: Client
 )
