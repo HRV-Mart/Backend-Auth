@@ -1,6 +1,6 @@
 package com.hrv.mart.backendauth.controller
 
-import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.AppWriteAuth
 import com.hrv.mart.authlibrary.model.AuthRequest
 import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
@@ -30,7 +30,8 @@ class AuthControllerTest {
         val jwt = "A_VALID_JWT"
         val userType = UserType.USER
 
-        val auth = Auth(
+        val auth = AppWriteAuth(
+            userId = UUID.randomUUID().toString(),
             email = "test@test.com",
             emailVerification = true,
             createdAt = Date().toString(),
