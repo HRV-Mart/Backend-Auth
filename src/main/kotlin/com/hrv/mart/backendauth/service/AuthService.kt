@@ -1,8 +1,10 @@
 package com.hrv.mart.backendauth.service
 
 import com.hrv.mart.authlibrary.model.AppWriteAuth
+import com.hrv.mart.authlibrary.model.AuthWithUserType
 import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
+import com.hrv.mart.backendauth.repository.AuthWithUserTypeRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,6 +17,8 @@ class AuthService (
     @Autowired
     private val appWriteAuthRepository: AppWriteAuthRepository,
     @Autowired
+    private val authWithUserTypeRepository: AuthWithUserTypeRepository,
+    @Autowired
     private val kafkaRepository: KafkaRepository
 )
 {
@@ -22,9 +26,13 @@ class AuthService (
         jwt: String,
         userType: UserType,
         response: ServerHttpResponse
-    ): Mono<AppWriteAuth> {
-        userType.name
-        return appWriteAuthRepository.getAuthAccount(jwt)
+    ) =
+        appWriteAuthRepository
+            .getAuthAccount(jwt)
+            .flatMap {
+                insertUserType(it.userId)
+                    .then(Mono.just(it))
+            }
             .flatMap {auth ->
                 response.statusCode = HttpStatus.OK
                 kafkaRepository
@@ -35,5 +43,21 @@ class AuthService (
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
                 Mono.empty()
             }
-    }
+    private fun insertUserType(userId: String) =
+        authWithUserTypeRepository
+            .existsByUserId(userId)
+            .flatMap {
+                if (it) {
+                    Mono.empty()
+                }
+                else {
+                    authWithUserTypeRepository
+                        .insert(
+                            AuthWithUserType(
+                                userId = userId,
+                                userType = UserType.USER
+                            )
+                        )
+                }
+            }
 }
