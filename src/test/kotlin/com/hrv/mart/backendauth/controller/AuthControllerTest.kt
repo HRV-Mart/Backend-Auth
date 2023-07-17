@@ -3,7 +3,7 @@ package com.hrv.mart.backendauth.controller
 import com.hrv.mart.authlibrary.model.Auth
 import com.hrv.mart.authlibrary.model.AuthRequest
 import com.hrv.mart.authlibrary.model.UserType
-import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.backendauth.service.AuthService
 import io.appwrite.exceptions.AppwriteException
@@ -18,11 +18,11 @@ import reactor.test.StepVerifier
 import java.util.*
 
 class AuthControllerTest {
-    private val mockAuthRepository = mock(AuthRepository::class.java)
+    private val mockAppWriteAuthRepository = mock(AppWriteAuthRepository::class.java)
     private val mockKafkaRepository = mock(KafkaRepository::class.java)
     private val response = mock(ServerHttpResponse::class.java)
 
-    private val authService = AuthService(mockAuthRepository, mockKafkaRepository)
+    private val authService = AuthService(mockAppWriteAuthRepository, mockKafkaRepository)
     private val authController = AuthController(authService)
 
     @Test
@@ -38,7 +38,7 @@ class AuthControllerTest {
             name = "Test User"
         )
         doReturn(Mono.just(auth))
-            .`when`(mockAuthRepository)
+            .`when`(mockAppWriteAuthRepository)
             .getAuthAccount(jwt)
         doReturn(Mono.empty<SenderResult<Void>>())
             .`when`(mockKafkaRepository)
@@ -61,7 +61,7 @@ class AuthControllerTest {
 
 
         doReturn(Mono.error<AppwriteException>(AppwriteException("JWT is invalid")))
-            .`when`(mockAuthRepository)
+            .`when`(mockAppWriteAuthRepository)
             .getAuthAccount(jwt)
 
         StepVerifier

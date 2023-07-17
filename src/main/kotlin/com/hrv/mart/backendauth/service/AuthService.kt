@@ -1,8 +1,8 @@
 package com.hrv.mart.backendauth.service
 
-import com.hrv.mart.authlibrary.model.Auth
+import com.hrv.mart.authlibrary.model.AppWriteAuth
 import com.hrv.mart.authlibrary.model.UserType
-import com.hrv.mart.backendauth.repository.AuthRepository
+import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 @Service
 class AuthService (
     @Autowired
-    private val authRepository: AuthRepository,
+    private val appWriteAuthRepository: AppWriteAuthRepository,
     @Autowired
     private val kafkaRepository: KafkaRepository
 )
@@ -22,9 +22,9 @@ class AuthService (
         jwt: String,
         userType: UserType,
         response: ServerHttpResponse
-    ): Mono<Auth> {
+    ): Mono<AppWriteAuth> {
         userType.name
-        return authRepository.getAuthAccount(jwt)
+        return appWriteAuthRepository.getAuthAccount(jwt)
             .flatMap {auth ->
                 response.statusCode = HttpStatus.OK
                 kafkaRepository
