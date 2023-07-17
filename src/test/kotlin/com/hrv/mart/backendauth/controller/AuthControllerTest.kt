@@ -2,8 +2,10 @@ package com.hrv.mart.backendauth.controller
 
 import com.hrv.mart.authlibrary.model.AppWriteAuth
 import com.hrv.mart.authlibrary.model.AuthRequest
+import com.hrv.mart.authlibrary.model.AuthWithUserType
 import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
+import com.hrv.mart.backendauth.repository.AuthWithUserTypeRepository
 import com.hrv.mart.backendauth.repository.KafkaRepository
 import com.hrv.mart.backendauth.service.AuthService
 import io.appwrite.exceptions.AppwriteException
@@ -20,9 +22,14 @@ import java.util.*
 class AuthControllerTest {
     private val mockAppWriteAuthRepository = mock(AppWriteAuthRepository::class.java)
     private val mockKafkaRepository = mock(KafkaRepository::class.java)
+    private val mockAuthWithUserTypeRepository = mock(AuthWithUserTypeRepository::class.java)
     private val response = mock(ServerHttpResponse::class.java)
 
-    private val authService = AuthService(mockAppWriteAuthRepository, mockKafkaRepository)
+    private val authService = AuthService(
+        mockAppWriteAuthRepository,
+        mockAuthWithUserTypeRepository,
+        mockKafkaRepository
+    )
     private val authController = AuthController(authService)
 
     @Test
@@ -38,9 +45,19 @@ class AuthControllerTest {
             updatedAt = Date().toString(),
             name = "Test User"
         )
+        val authWithUserType = AuthWithUserType(
+            userId = auth.userId,
+            userType = userType
+        )
         doReturn(Mono.just(auth))
             .`when`(mockAppWriteAuthRepository)
             .getAuthAccount(jwt)
+        doReturn(Mono.just(authWithUserType))
+            .`when`(mockAuthWithUserTypeRepository)
+            .findByUserId(auth.userId)
+        doReturn(Mono.just(true))
+            .`when`(mockAuthWithUserTypeRepository)
+            .existsByUserId(auth.userId)
         doReturn(Mono.empty<SenderResult<Void>>())
             .`when`(mockKafkaRepository)
             .createUser(auth.toUser())

@@ -29,7 +29,7 @@ class AuthService (
         appWriteAuthRepository
             .getAuthAccount(jwt)
             .flatMap {
-                insertUserType(it.userId)
+                insertUserType(it.userId, userType)
                     .then(Mono.just(it))
             }
             .flatMap {auth ->
@@ -42,12 +42,26 @@ class AuthService (
                 response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
                 Mono.empty()
             }
-    private fun insertUserType(userId: String) =
+    private fun insertUserType(userId: String, userType: UserType) =
         authWithUserTypeRepository
             .existsByUserId(userId)
             .flatMap {
                 if (it) {
-                    Mono.empty()
+                    if (userType == UserType.ADMIN) {
+                        authWithUserTypeRepository
+                            .findByUserId(userId)
+                            .flatMap { authWithUserType ->
+                                if (authWithUserType.userType == UserType.ADMIN) {
+                                    Mono.empty()
+                                }
+                                else {
+                                    Mono.error(Throwable("User do not have required access"))
+                                }
+                            }
+                    }
+                    else {
+                        Mono.empty()
+                    }
                 }
                 else {
                     authWithUserTypeRepository
