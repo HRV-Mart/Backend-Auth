@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface AuthWithUserTypeRepository : ReactiveMongoRepository<AuthWithUserType, String> {
-    fun findByUserId(userId: String): Mono<AuthWithUserType>
+    fun existsByUserId(userId: String): Mono<Boolean>
 }
