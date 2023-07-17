@@ -1,6 +1,5 @@
 package com.hrv.mart.backendauth.service
 
-import com.hrv.mart.authlibrary.model.AppWriteAuth
 import com.hrv.mart.authlibrary.model.AuthWithUserType
 import com.hrv.mart.authlibrary.model.UserType
 import com.hrv.mart.backendauth.repository.AppWriteAuthRepository
