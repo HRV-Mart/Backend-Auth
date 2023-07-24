@@ -17,3 +17,7 @@ updates:
     - maven-github
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
