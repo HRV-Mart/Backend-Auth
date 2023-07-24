@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import io.gitlab.arturbosch.detekt.Detekt
 plugins {
-    id("org.springframework.boot") version "3.1.1"
-    id("io.spring.dependency-management") version "1.1.1"
+    id("org.springframework.boot") version "3.1.2"
+    id("io.spring.dependency-management") version "1.1.2"
     id("io.gitlab.arturbosch.detekt").version("1.22.0") // This is to add detekt
     id("jacoco")// Add Jacoco
     kotlin("jvm") version "1.8.22"
