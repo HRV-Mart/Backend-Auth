@@ -52,6 +52,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
+          path: ./build/libs/${{ github.event.repository.name }}-0.0.1-SNAPSHOT.jar
           name: java-app
       - name: Checkout repository
         uses: actions/checkout@v2
