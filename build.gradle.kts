@@ -5,7 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.3"
     id("io.gitlab.arturbosch.detekt").version("1.23.1") // This is to add detekt
     id("jacoco")// Add Jacoco
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.0"
 }
 
