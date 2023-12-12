@@ -1,4 +1,4 @@
-FROM openjdk:22
+FROM openjdk:23
 ARG JAR_FILE=build/libs/Backend-Auth-0.0.1-SNAPSHOT.jar
 ARG MONGODB_URI=mongodb://localhost:27017
 ARG KAFKA_URL=localhost:9092
